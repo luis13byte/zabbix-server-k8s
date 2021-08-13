@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zabbix-server
+  strategy:
+    type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: zabbix-server
+    spec:
+      containers:
+        - name: zabbix-server
+          image: zabbix/zabbix-server-pgsql:5.4.2-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 10051
+            name: server
+            protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: server
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: server
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          env:
+          - name: DB_SERVER_HOST
+            value: "postgres"
+          - name: POSTGRES_USER
+            value: "zabbix"
+          - name: POSTGRES_PASSWORD
+            value: "PASSWORD######"
+          - name: POSTGRES_DATABASE
+            value: "zabbix"
+          - name: ZBX_CACHESIZE
+            value: "1024M"
+          - name: ZBX_TRENDCACHESIZE
+            value: "1024M"
+          - name: ZBX_HISTORYCACHESIZE
+            value: "2048M"
+          - name: ZBX_HISTORYINDEXCACHESIZE
+            value: "1024M"
+          - name: ZBX_STARTTRAPPERS
+            value: "5"
+          - name: ZBX_STARTPREPROCESSORS
+            value: "10"
+          - name: ZBX_STARTDBSYNCERS
+            value: "10"
+          - name: DB_SERVER_PORT
+            value: "5432"
+        - name: zabbix-agent
+          image: zabbix/zabbix-agent:5.4.2-alpine
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 10050
+            name: zabbix-agent
+          env:
+          - name: ZBX_HOSTNAME
+            value: "Zabbix server"
+          - name: ZBX_SERVER_HOST
+            value: "127.0.0.1"
+          - name: ZBX_PASSIVE_ALLOW
+            value: "true"
+          - name: ZBX_STARTAGENTS
+            value: "3"
+          - name: ZBX_TIMEOUT
+            value: "10"
+          securityContext:
+            privileged: true

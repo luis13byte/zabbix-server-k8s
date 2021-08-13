@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zabbix-web
+  strategy:
+    type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: zabbix-web
+    spec:
+      containers:
+      - image: zabbix/zabbix-web-nginx-pgsql:5.4.3-alpine
+        name: zabbix-web
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
+        env:
+        - name: DB_SERVER_HOST
+          value: "postgres"
+        - name:  ZBX_SERVER_HOST
+          value: "zabbixserver"
+	- name: POSTGRES_USER
+          value: "zabbix"
+        - name: POSTGRES_PASSWORD
+          value: "PASSWORD######"
+        - name: TZ
+          value: "Europe/Madrid"
