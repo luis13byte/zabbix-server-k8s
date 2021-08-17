@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pgsql-dbms
+spec:
+  serviceName: pgsql-svc
+  selector:
+    matchLabels:
+      app: pgsql
+  replicas: 2
+  # Estrategia a la hora de aplicar este manifiesto
+  updateStrategy:
+    type: RollingUpdate
+ 
+  template:
+    metadata:
+      labels:
+        app: pgsql
+    spec:
+      containers:
+        - name: pgsql-dbms
+          image: postgres:9.6
+          imagePullPolicy: "IfNotPresent"
+          # args: ['-c', 'config_file=/etc/postgres.conf', '-c', 'hba_file=/etc/pg_hba.conf']
+          # Limites de recursos por pod
+          resources:
+            limits:
+              cpu: 400m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          # Puerto a exponer del contenedor
+          ports:
+            - containerPort: 5432
+          # Hacer referencia a secrets para importar variables
+          env:
+          - name: POSTGRES_DB
+            value: testingdb
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: pgsql-secret-values
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:    
+              secretKeyRef:
+                name: pgsql-secret-values
+                key: POSTGRES_PASSWORD
+          # Crea el punto de montaje postgresql-data
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pgsql-data
+            # Usar configmap para automatizar config
+            - mountPath: /var/lib/postgresql/data/pg_hba.conf
+              name: pg-hba-config
+      # Asigna el PVC que hara referencia al punto de montaje en el contenedor
+      volumes:
+        - name: pgsql-data
+          persistentVolumeClaim:
+            claimName: pgsql-pv-claim
+        - name: pg-hba-config
+          configMap:
+            name: pg-hba-config
