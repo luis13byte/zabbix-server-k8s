@@ -6,7 +6,10 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: pgsql-pv
+  # Vincular el PV al PVC específico para que solo pueda ser reclamado por este
+  claimRef:
+    name: pgsql-pv-claim
+    namespace: default
   capacity:
     storage: 5Gi
   accessModes:
@@ -22,7 +25,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pgsql-pv-claim
 spec:
-  storageClassName: pgsql-pv
+  volumeName: pgsql-pv
   accessModes:
     - ReadWriteOnce
   resources:

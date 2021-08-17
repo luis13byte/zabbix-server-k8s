@@ -3,13 +3,14 @@ kind: StatefulSet
 metadata:
   name: pgsql-dbms
 spec:
+  serviceName: pgsql-svc
+  selector:
+    matchLabels:
+      app: pgsql
   replicas: 2
-  # Estrategia a la hora de volver a aplicar este manifiesto
-  strategy:
+  # Estrategia a la hora de aplicar este manifiesto
+  updateStrategy:
     type: RollingUpdate
-      rollingUpdate:
-        maxSurge: 25%
-        maxUnavailable: 25%
  
   template:
     metadata:
@@ -20,16 +21,16 @@ spec:
         - name: pgsql-dbms
           image: postgres:9.6
           imagePullPolicy: "IfNotPresent"
-          ##args: ['-c', 'config_file=/etc/postgres.conf', '-c', 'hba_file=/etc/pg_hba.conf']
-	  # Limites de recursos por pod
-	  resources:
+          # args: ['-c', 'config_file=/etc/postgres.conf', '-c', 'hba_file=/etc/pg_hba.conf']
+          # Limites de recursos por pod
+          resources:
             limits:
               cpu: 400m
               memory: 1024Mi
             requests:
               cpu: 100m
               memory: 100Mi
-	  # Puerto a exponer del contenedor
+          # Puerto a exponer del contenedor
           ports:
             - containerPort: 5432
           # Usar configmap (para automatizar config, en este caso, declaración de variables)
