@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: pgsql
   labels:
-    app: postgres
+    app: pgsql
 spec:
   type: NodePort
   ports:
    - port: 5432
   selector:
-   app: postgres
+   app: pgsql

@@ -1,26 +1,32 @@
-kind: PersistentVolume
 apiVersion: v1
+kind: PersistentVolume
+# Volumen fisico en el host que almacena datos persistentes
 metadata:
-  name: pgsql-pv-volume
+  name: pgsql-pv
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: pgsql-pv
   capacity:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/pgsql-data"
+    path: "/mnt/srv/postgresql-db/disk/var/data"
+
 ---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
+# Solicitud de PV, con las características que se indican en "spec:"
 metadata:
   name: pgsql-pv-claim
 spec:
-  storageClassName: manual
+  storageClassName: pgsql-pv
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
+
+# Volumes flux: Pod -> PVC -> PV -> Host machine
