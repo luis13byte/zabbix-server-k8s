@@ -36,30 +36,10 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           env:
-          - name: DB_SERVER_HOST
-            value: "postgres"
-          - name: POSTGRES_USER
-            value: "zabbix"
-          - name: POSTGRES_PASSWORD
-            value: "PASSWORD######"
-          - name: POSTGRES_DATABASE
-            value: "zabbix"
-          - name: ZBX_CACHESIZE
-            value: "1024M"
-          - name: ZBX_TRENDCACHESIZE
-            value: "1024M"
-          - name: ZBX_HISTORYCACHESIZE
-            value: "2048M"
-          - name: ZBX_HISTORYINDEXCACHESIZE
-            value: "1024M"
-          - name: ZBX_STARTTRAPPERS
-            value: "5"
-          - name: ZBX_STARTPREPROCESSORS
-            value: "10"
-          - name: ZBX_STARTDBSYNCERS
-            value: "10"
-          - name: DB_SERVER_PORT
-            value: "5432"
+          - name: import-zabbix-env
+              valueFrom:
+                configMapKeyRef:
+                  name: zabbix-env-configmap
         - name: zabbix-agent
           image: zabbix/zabbix-agent:5.4.2-alpine
           imagePullPolicy: Always
