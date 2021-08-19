@@ -21,7 +21,6 @@ spec:
         - name: pgsql-dbms
           image: postgres:9.6
           imagePullPolicy: "IfNotPresent"
-          # args: ['-c', 'config_file=/etc/postgres.conf', '-c', 'hba_file=/etc/pg_hba.conf']
           # Limites de recursos por pod
           resources:
             limits:
@@ -51,14 +50,15 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: pgsql-data
-            # Usar configmap para automatizar config
-            - mountPath: /var/lib/postgresql/data/pg_hba.conf
-              name: pg-hba-config
+              readOnly: false
+            # Usar configmap para enviar archivos de configuración a los pods mediante un volumen (se pueden copiar automaticamente a data/ usando un pod custom con initContainer)
+            - mountPath: /opt/custom-postgresql-conf
+              name: custom-postgresql-conf
       # Asigna el PVC que hara referencia al punto de montaje en el contenedor
       volumes:
         - name: pgsql-data
           persistentVolumeClaim:
             claimName: pgsql-pv-claim
-        - name: pg-hba-config
+        - name: custom-postgresql-conf
           configMap:
-            name: pg-hba-config
+            name: custom-postgresql-configmap
