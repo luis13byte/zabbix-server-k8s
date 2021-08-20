@@ -31,13 +31,20 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
-          # Puerto a exponer del contenedor
+          # Puerto a exponer del contenedor y liveness probe
           ports:
-            - containerPort: 5432
+            - name: pgport
+              containerPort: 5432
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: pgport
+            initialDelaySeconds: 600
+            periodSeconds: 30
           # Hacer referencia a secrets para importar variables
           env:
           - name: POSTGRES_DB
-            value: testingdb
+            value: exampledb
           - name: POSTGRES_USER
             valueFrom:
               secretKeyRef:
