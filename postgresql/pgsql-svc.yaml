@@ -6,7 +6,11 @@ metadata:
     app: pgsql
 spec:
   type: NodePort
-  ports:
-   - port: 5432
   selector:
-   app: pgsql
+    app: pgsql
+  ports:
+   - name: psqlport
+     port: 5432
+     targetPort: 5432
+     nodePort: 30543
+     protocol: TCP
