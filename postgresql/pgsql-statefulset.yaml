@@ -11,7 +11,9 @@ spec:
   # Estrategia a la hora de aplicar este manifiesto
   updateStrategy:
     type: RollingUpdate
- 
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
   template:
     metadata:
       labels:
