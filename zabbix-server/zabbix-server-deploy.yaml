@@ -9,9 +9,9 @@ spec:
       app: zabbix-server
   strategy:
     type: RollingUpdate
-      rollingUpdate:
-        maxSurge: 25%
-        maxUnavailable: 25%
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
   template:
     metadata:
       labels:
@@ -35,27 +35,20 @@ spec:
               port: server
             initialDelaySeconds: 15
             periodSeconds: 20
-          env:
-          - name: import-zabbix-env
-              valueFrom:
-                configMapKeyRef:
-                  name: zabbix-env-configmap
+          # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
+          envFrom:
+          - name: import-zabbix-server-env
+            configMapRef:
+                name: zabbix-server-env
         - name: zabbix-agent
           image: zabbix/zabbix-agent:5.4.2-alpine
           imagePullPolicy: Always
           ports:
           - containerPort: 10050
             name: zabbix-agent
-          env:
-          - name: ZBX_HOSTNAME
-            value: "Zabbix server"
-          - name: ZBX_SERVER_HOST
-            value: "127.0.0.1"
-          - name: ZBX_PASSIVE_ALLOW
-            value: "true"
-          - name: ZBX_STARTAGENTS
-            value: "3"
-          - name: ZBX_TIMEOUT
-            value: "10"
+          envFrom:
+          - name: import-zabbix-agent-env
+            configMapRef:
+              name: zabbix-agent-env
           securityContext:
             privileged: true
