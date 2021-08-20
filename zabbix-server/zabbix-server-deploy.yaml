@@ -37,9 +37,8 @@ spec:
             periodSeconds: 20
           # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
           envFrom:
-          - name: import-zabbix-server-env
-            configMapRef:
-                name: zabbix-server-env
+          - configMapRef:
+              name: zabbix-server-env
         - name: zabbix-agent
           image: zabbix/zabbix-agent:5.4.2-alpine
           imagePullPolicy: Always
@@ -47,8 +46,7 @@ spec:
           - containerPort: 10050
             name: zabbix-agent
           envFrom:
-          - name: import-zabbix-agent-env
-            configMapRef:
+          - configMapRef:
               name: zabbix-agent-env
           securityContext:
             privileged: true
