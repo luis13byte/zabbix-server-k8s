@@ -11,9 +11,9 @@ spec:
   # Estrategia a la hora de aplicar este manifiesto
   updateStrategy:
     type: RollingUpdate
+    # Esto hace que se actualicen los pods con un numero ordinal mayor o igual que 0 (available conf only for statefulset)
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+      partition: 0
   template:
     metadata:
       labels:
