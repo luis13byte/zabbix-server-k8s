@@ -9,9 +9,9 @@ spec:
       app: zabbix-web
   strategy:
     type: RollingUpdate
-      rollingUpdate:
-        maxSurge: 25%
-        maxUnavailable: 25%
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
   template:
     metadata:
       labels:
@@ -25,8 +25,7 @@ spec:
         - containerPort: 80
           name: web
           protocol: TCP
-        env:
-        - name: import-zabbix-web-env
-            valueFrom:
-              configMapKeyRef:
-                name: zabbix-web-env
+        # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
+        envFrom:
+        - configMapRef:
+            name: zabbix-web-env
