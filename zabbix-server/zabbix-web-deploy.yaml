@@ -26,13 +26,7 @@ spec:
           name: web
           protocol: TCP
         env:
-        - name: DB_SERVER_HOST
-          value: "postgres"
-        - name:  ZBX_SERVER_HOST
-          value: "zabbixserver"
-	- name: POSTGRES_USER
-          value: "zabbix"
-        - name: POSTGRES_PASSWORD
-          value: "PASSWORD######"
-        - name: TZ
-          value: "Europe/Madrid"
+        - name: import-zabbix-web-env
+            valueFrom:
+              configMapKeyRef:
+                name: zabbix-web-env
