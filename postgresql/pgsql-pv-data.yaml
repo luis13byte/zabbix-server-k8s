@@ -2,20 +2,20 @@ apiVersion: v1
 kind: PersistentVolume
 # Volumen fisico en el host que almacena datos persistentes
 metadata:
-  name: pgsql-pv
+  name: pgsql-pv-data
   labels:
     type: local
 spec:
   # Vincular el PV al PVC específico para que solo pueda ser reclamado por este
   claimRef:
-    name: pgsql-pv-claim
+    name: pgsql-pv-data-claim
     namespace: default
   capacity:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/srv/postgresql-db/disk/var/data"
+    path: "/mnt/srv/postgresql-db/disk/var/lib/postgresql/data"
 
 ---
 
@@ -23,7 +23,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 # Solicitud de PV, con las características que se indican en "spec:"
 metadata:
-  name: pgsql-pv-claim
+  name: pgsql-pv-data-claim
 spec:
   volumeName: pgsql-pv
   accessModes:
