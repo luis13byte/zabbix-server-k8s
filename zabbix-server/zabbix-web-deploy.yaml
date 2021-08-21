@@ -18,12 +18,12 @@ spec:
         app: zabbix-web
     spec:
       containers:
-      - image: zabbix/zabbix-web-nginx-pgsql:5.4.3-alpine
+      - image: zabbix/zabbix-web-nginx-pgsql:5.4.2-alpine
         name: zabbix-web
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
-          name: web
+          name: webport
           protocol: TCP
         # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
         envFrom:
