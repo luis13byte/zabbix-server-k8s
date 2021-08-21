@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zabbix-agent-env
+  labels:
+    app: zabbix-server
+data:
+  ZBX_HOSTNAME: "z13clientweb01"
+  ZBX_SERVER_HOST: "10.152.183.77"
+  ZBX_PASSIVE_ALLOW: "true"
+  ZBX_STARTAGENTS: "3"
+  ZBX_TIMEOUT: "10"
