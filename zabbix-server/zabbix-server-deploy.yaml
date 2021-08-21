@@ -17,24 +17,31 @@ spec:
       labels:
         app: zabbix-server
     spec:
+      # Ejecuto un pg_isready para comprobar que existe un PostgreSQL server activo, antes de iniciar el contenedor principal
+      initContainers:
+      - name: pgsql-client-initializer
+        image: postgres:13.4
+        imagePullPolicy: "IfNotPresent"
+        command: ['bash', '-c', 'until pg_isready -h 10.152.183.100 -p 5432;
+          do echo waiting for database; sleep 2; done']
       containers:
         - name: zabbix-server
           image: zabbix/zabbix-server-pgsql:5.4.2-alpine
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 10051
-            name: server
+            name: masterport
             protocol: TCP
-          readinessProbe:
-            tcpSocket:
-              port: server
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: server
-            initialDelaySeconds: 15
-            periodSeconds: 20
+#          livenessProbe:
+#            tcpSocket:
+#              port: masterport
+#            initialDelaySeconds: 20
+#            periodSeconds: 20
+#          readinessProbe:
+#            tcpSocket:
+#              port: masterport
+#            initialDelaySeconds: 25
+#            periodSeconds: 20
           # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
           envFrom:
           - configMapRef:
