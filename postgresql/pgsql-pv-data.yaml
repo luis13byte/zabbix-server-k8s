@@ -25,7 +25,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pgsql-pv-data-claim
 spec:
-  volumeName: pgsql-pv
+  volumeName: pgsql-pv-data
   accessModes:
     - ReadWriteOnce
   resources:
