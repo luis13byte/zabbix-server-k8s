@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: zabbixserver
 spec:
-  type: NodePort
+  type: ClusterIP
+  clusterIP: 10.152.183.77
   ports:
   - port:  10051
-    nodePort: 30051
     protocol: TCP
     targetPort: 10051
   selector:
