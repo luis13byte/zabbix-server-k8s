@@ -11,7 +11,7 @@ spec:
   # Estrategia a la hora de aplicar este manifiesto
   updateStrategy:
     type: RollingUpdate
-    # Esto hace que se actualicen los pods con un numero ordinal mayor o igual que 0 (available conf only for statefulset)
+    # Esto hace que se actualicen los pods con un numero ordinal mayor o igual que 0 (disponible solo para statefulsets)
     rollingUpdate:
       partition: 0
   template:
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: pgsql-dbms
-          image: postgres:9.6
+          image: postgres:13.4
           imagePullPolicy: "IfNotPresent"
           # Limites de recursos por pod
           resources:
@@ -39,12 +39,17 @@ spec:
           livenessProbe:
             tcpSocket:
               port: pgport
-            initialDelaySeconds: 600
-            periodSeconds: 30
+            initialDelaySeconds: 80
+            periodSeconds: 20
+          # Configurar eventos del ciclo de vida del contenedor
+          lifecycle: 
+            postStart:
+              exec:
+                command: ['bash', '-c', '/config/init-zabbix-structure.sh']
           # Hacer referencia a secrets para importar variables
           env:
           - name: POSTGRES_DB
-            value: exampledb
+            value: zabbix
           - name: POSTGRES_USER
             valueFrom:
               secretKeyRef:
@@ -63,11 +68,18 @@ spec:
             # Usar configmap para enviar archivos de configuración a los pods mediante un volumen (se pueden copiar automaticamente a data/ usando un pod custom con initContainer)
             - mountPath: /opt/custom-postgresql-conf
               name: custom-postgresql-conf
+            # Mover script y volcado a esta ruta, para crear la estructura de zabbix DB
+            - mountPath: /config
+              name: pgsql-templatesdb
+
       # Asigna el PVC que hara referencia al punto de montaje en el contenedor
       volumes:
         - name: pgsql-data
           persistentVolumeClaim:
-            claimName: pgsql-pv-claim
+            claimName: pgsql-pv-data-claim
         - name: custom-postgresql-conf
           configMap:
             name: custom-postgresql-configmap
+        - name: pgsql-templatesdb
+          persistentVolumeClaim:
+            claimName: pgsql-pv-templatesdb-claim
