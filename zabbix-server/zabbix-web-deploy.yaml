@@ -18,9 +18,13 @@ spec:
         app: zabbix-web
     spec:
       containers:
-      - image: zabbix/zabbix-web-nginx-pgsql:5.4.2-alpine
-        name: zabbix-web
+      - name: zabbix-web
+        image: zabbix/zabbix-web-nginx-pgsql:5.4.2-alpine
         imagePullPolicy: IfNotPresent
+        # Usar root, no recomendable para producción
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 0
         ports:
         - containerPort: 80
           name: webport
