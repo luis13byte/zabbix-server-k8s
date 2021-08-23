@@ -13,3 +13,4 @@ data:
   POSTGRES_PASSWORD: "Secret*1313"
   POSTGRES_DB: "zabbix"
   TZ: "Europe/Madrid"
+  PHP_TZ: "Europe/Madrid" 
