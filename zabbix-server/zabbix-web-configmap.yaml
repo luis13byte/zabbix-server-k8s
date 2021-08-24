@@ -6,7 +6,7 @@ metadata:
     app: zabbix-web
 data:
   ZBX_SERVER_HOST: "10.152.183.77"
-  ZBX_SERVER_PORT: "1051"
+  ZBX_SERVER_PORT: "10051"
   DB_SERVER_PORT: "5432"
   DB_SERVER_HOST: "10.152.183.100"
   POSTGRES_USER: "zabbix"
