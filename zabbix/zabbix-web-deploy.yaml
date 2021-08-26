@@ -3,10 +3,11 @@ kind: Deployment
 metadata:
   name: zabbix-web
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: zabbix-web
+      app: zabbix
+      tier: web
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -15,21 +16,43 @@ spec:
   template:
     metadata:
       labels:
-        app: zabbix-web
+        name: zabbix-web
+        app: zabbix
+        tier: web
     spec:
       containers:
       - name: zabbix-web
-        image: zabbix/zabbix-web-nginx-pgsql:5.4.2-alpine
+        image: zabbix/zabbix-web-nginx-pgsql:alpine-5.4-latest
         imagePullPolicy: IfNotPresent
-        # Usar root, no recomendable para producción
         securityContext:
-          allowPrivilegeEscalation: false
-          runAsUser: 0
+          privileged: true
+        #  allowPrivilegeEscalation: false
+        #  runAsUser: 0
         ports:
-        - containerPort: 80
-          name: webport
-          protocol: TCP
+        - containerPort: 8080
+          name: web-http
+        - containerPort: 8443
+          name: web-https
+        resources:
+            limits:
+              cpu: 700m
+              memory: "536870912"
+            requests:
+              cpu: 500m
+              memory: "268435456"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: web-http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+
         # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
         envFrom:
         - configMapRef:
             name: zabbix-web-env
+      terminationGracePeriodSeconds: 10
