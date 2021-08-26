@@ -3,10 +3,11 @@ kind: Deployment
 metadata:
   name: zabbix-server
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: zabbix-server
+      app: zabbix
+      tier: server
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -15,45 +16,54 @@ spec:
   template:
     metadata:
       labels:
-        app: zabbix-server
+        name: zabbix-server
+        app: zabbix
+        tier: server
     spec:
-      # Ejecuto un pg_isready para comprobar que existe un PostgreSQL server activo, antes de iniciar el contenedor principal
       initContainers:
       - name: pgsql-client-initializer
         image: postgres:13.4
         imagePullPolicy: "IfNotPresent"
-        command: ['bash', '-c', 'until pg_isready -h 10.152.183.100 -p 5432;
+        command: ['bash', '-c', 'until pg_isready -h zabbix-db -p 5432;
           do echo waiting for database; sleep 2; done']
       containers:
         - name: zabbix-server
-          image: zabbix/zabbix-server-pgsql:5.4.2-alpine
+          image: zabbix/zabbix-server-pgsql:alpine-5.4-latest
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 10051
             name: masterport
             protocol: TCP
+          securityContext:  
+            privileged: true
+            #allowPrivilegeEscalation: false
+            #runAsUser: 0
+
 #          livenessProbe:
 #            tcpSocket:
 #              port: masterport
-#            initialDelaySeconds: 20
-#            periodSeconds: 20
+#            initialDelaySeconds: 5
+#            periodSeconds: 3
 #          readinessProbe:
 #            tcpSocket:
 #              port: masterport
-#            initialDelaySeconds: 25
-#            periodSeconds: 20
-          # Se usa envFrom para configurar TODOS los datos de ConfigMap como variables del contenedor
+#            initialDelaySeconds: 10
+#            periodSeconds: 5
+
           envFrom:
           - configMapRef:
               name: zabbix-server-env
+
         - name: zabbix-agent
-          image: zabbix/zabbix-agent:5.4.2-alpine
-          imagePullPolicy: Always
+          image: zabbix/zabbix-agent:alpine-5.4-latest
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 10050
-            name: zabbix-agent
           envFrom:
           - configMapRef:
               name: zabbix-agent-env
+          # Para monitorear recursos del sistema el contenedor debe ser privilegiado
           securityContext:
             privileged: true
+#            allowPrivilegeEscalation: false
+#            runAsUser: 0
