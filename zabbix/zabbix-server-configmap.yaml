@@ -3,13 +3,16 @@ kind: ConfigMap
 metadata:
   name: zabbix-server-env
   labels:
-    app: zabbix-server
+    app: zabbix
+    tier: server
 data:
-  DB_SERVER_HOST: "10.152.183.100"
+  DB_SERVER_HOST: "zabbix-db"
   DB_SERVER_PORT: "5432"
   POSTGRES_USER: "zabbix"
   POSTGRES_PASSWORD: "Secret*1313"
   POSTGRES_DB: "zabbix"
+  TZ: "Europe/Madrid"
+  ZBX_DEBUGLEVEL: "3"
   ZBX_CACHESIZE: "1024M"
   ZBX_TRENDCACHESIZE: "1024M"
   ZBX_HISTORYCACHESIZE: "2048M"
