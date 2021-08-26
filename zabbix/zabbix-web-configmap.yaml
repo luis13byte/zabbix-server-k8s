@@ -3,14 +3,17 @@ kind: ConfigMap
 metadata:
   name: zabbix-web-env
   labels:
-    app: zabbix-web
+    app: zabbix
+    tier: web
 data:
-  ZBX_SERVER_HOST: "10.152.183.77"
+  ZBX_SERVER_HOST: "zabbix-server"
   ZBX_SERVER_PORT: "10051"
+  ZBX_DB_VERIFY_HOST: "true"
+  DB_SERVER_HOST: "zabbix-db"
   DB_SERVER_PORT: "5432"
-  DB_SERVER_HOST: "10.152.183.100"
   POSTGRES_USER: "zabbix"
   POSTGRES_PASSWORD: "Secret*1313"
   POSTGRES_DB: "zabbix"
   TZ: "Europe/Madrid"
-  PHP_TZ: "Europe/Madrid" 
+  PHP_TZ: "Europe/Madrid"
+  ZBX_SERVER_NAME: "Zabbix on K8s"
