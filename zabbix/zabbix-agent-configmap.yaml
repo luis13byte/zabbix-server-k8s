@@ -3,7 +3,8 @@ kind: ConfigMap
 metadata:
   name: zabbix-agent-env
   labels:
-    app: zabbix-agent
+    app: zabbix
+    tier: agent
 data:
   ZBX_HOSTNAME: "Zabbix server"
   ZBX_SERVER_HOST: "zabbix-server"
