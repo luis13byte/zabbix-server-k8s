@@ -14,6 +14,8 @@ data:
   POSTGRES_USER: "zabbix"
   POSTGRES_PASSWORD: "Secret*1313"
   POSTGRES_DB: "zabbix"
+  ZBX_POSTMAXSIZE: "64M"
+  ZBX_MEMORYLIMIT: "256M"
   TZ: "Europe/Madrid"
   PHP_TZ: "Europe/Madrid"
   ZBX_SERVER_NAME: "Zabbix on K8s"
