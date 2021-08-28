@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: pgsql-dbms
+  name: zabbix-db
 spec:
-  serviceName: pgsql-svc
+  serviceName: zabbix-db
   selector:
     matchLabels:
-      app: pgsql
+      app: zabbix
+      tier: database
   replicas: 2
-  # Estrategia a la hora de aplicar este manifiesto
   updateStrategy:
     type: RollingUpdate
     # Esto hace que se actualicen los pods con un numero ordinal mayor o igual que 0 (disponible solo para statefulsets)
@@ -17,13 +17,14 @@ spec:
   template:
     metadata:
       labels:
-        app: pgsql
+        name: zabbix-db
+        app: zabbix
+        tier: database
     spec:
       containers:
-        - name: pgsql-dbms
+        - name: zabbix-db
           image: postgres:13.4
           imagePullPolicy: "IfNotPresent"
-          # Limites de recursos por pod
           resources:
             limits:
               cpu: 400m
@@ -31,7 +32,6 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
-          # Puerto a exponer del contenedor y liveness probe
           ports:
             - name: pgport
               containerPort: 5432
