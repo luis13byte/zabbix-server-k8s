@@ -30,6 +30,9 @@ spec:
         - |
             sysctl -w net.core.somaxconn=65535
             sysctl -w net.ipv4.ip_local_port_range="1024 65535"
+            sysctl -w net.ipv4.conf.all.accept_redirects=0
+            sysctl -w net.ipv4.conf.all.secure_redirects=0
+            sysctl -w net.ipv4.conf.all.send_redirects=0
         securityContext:
           privileged: true
       containers:
@@ -40,10 +43,6 @@ spec:
           privileged: true
           #allowPrivilegeEscalation: false
           #runAsUser: 0
-        lifecycle:
-          postStart:
-            exec:
-              command: ["/bin/bash", "-c", "sed -i 's/worker_rlimit_nofile 256000;/worker_rlimit_nofile 10000;/g' /etc/nginx/nginx.conf"]
         ports:
         - containerPort: 8080
           name: web-http
@@ -52,10 +51,10 @@ spec:
         resources:
             limits:
               cpu: 700m
-              memory: "536870912"
+              memory: "512M"
             requests:
               cpu: 500m
-              memory: "268435456"
+              memory: "256M"
         livenessProbe:
           httpGet:
             path: /
