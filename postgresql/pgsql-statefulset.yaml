@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: zabbix
       tier: database
-  replicas: 2
+  replicas: 1
   updateStrategy:
     type: RollingUpdate
     # Esto hace que se actualicen los pods con un numero ordinal mayor o igual que 0 (disponible solo para statefulsets)
