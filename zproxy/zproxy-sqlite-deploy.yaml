@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zproxy-sqlite
+  namespace: default
+spec:
+  strategy:
+    type: Recreate
+    rollingUpdate: null
+  selector:
+    matchLabels:
+      name: zproxy-sqlite
+      app: zabbix
+      tier: proxy
+  template:
+    metadata:
+      labels:
+        name: zproxy-sqlite
+        app: zabbix
+        tier: proxy
+    spec:
+      # Asignando la creación de los pods a un worker determinado por sus etiquetas
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+           - weight: 1
+             preference:
+               matchExpressions:
+               - key: disktype
+                 operator: In
+                 values:
+                 - ssd
+               - key: srvprovider              
+                 operator: In 
+                 values:  
+                 - server4you
+      containers:
+        - name: z-proxy-sqlite3
+          image: zabbix/zabbix-proxy-sqlite3:alpine-5.4-latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 10051
+            protocol: TCP
+            name: zabbix-trapper
+          startupProbe:
+            tcpSocket:
+              port: 10051
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 40
+          livenessProbe:
+            tcpSocket:
+              port: 10051
+            timeoutSeconds: 3
+            failureThreshold: 3
+            periodSeconds: 10
+          envFrom:
+          - configMapRef:
+              name: zproxy-sqlite-env
+
+#          volumeMounts:
+#          - mountPath: "/var/lib/zabbix/db_data"
+#            name: proxy-sqlite-data
+          securityContext:
+            capabilities: {}
+            privileged: false
