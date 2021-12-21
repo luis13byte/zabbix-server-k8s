@@ -25,7 +25,6 @@ metadata:
     tier: database
 spec:
   type: ClusterIP
-  clusterIP: 10.152.183.100
   selector:
     name: zabbix-db
   ports:
